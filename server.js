@@ -23,6 +23,23 @@ const schema = buildSchema(
     # Search books by title or author
     searchBooks(query: String!): [Book!]!
   }
+
+  # Input type for adding/updating books
+  input BookInput {
+    title: String
+    author: String
+    year: Int
+    genre: String
+  }
+
+  type Mutation {
+    # Add a new book
+    addBook(input: BookInput!): Book!
+    # Update an existing book
+    updateBook(id: ID!, input: BookInput!): Book
+    # Delete a book
+    deleteBook(id: ID!): Boolean
+  }
 `
 );
 
@@ -43,6 +60,36 @@ const root = {
         book.title.toLowerCase().includes(searchTerm) ||
         book.author.toLowerCase().includes(searchTerm)
     );
+  },
+
+  // Mutation resolvers
+  addBook: ({ input }) => {
+    const newBook = {
+      id: String(books.length + 1),
+      ...input,
+    };
+    books.push(newBook);
+    return newBook;
+  },
+
+  updateBook: ({ id, input }) => {
+    const bookIndex = books.findIndex((book) => book.id === id);
+    if (bookIndex === -1) return null;
+
+    const updatedBook = {
+      ...books[bookIndex],
+      ...input,
+    };
+    books[bookIndex] = updatedBook;
+    return updatedBook;
+  },
+
+  deleteBook: ({ id }) => {
+    const bookIndex = books.findIndex((book) => book.id === id);
+    if (bookIndex === -1) return false;
+
+    books.splice(bookIndex, 1);
+    return true;
   },
 };
 
