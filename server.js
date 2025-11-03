@@ -1,6 +1,6 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const { buildSchema } = require("graphql");
+const { buildSchema, GraphQLError } = require("graphql");
 const { books } = require("./sample_data");
 
 // Graphql Schema
@@ -70,6 +70,14 @@ const root = {
 
   // Mutation resolvers
   addBook: ({ input }) => {
+    if (
+      input.year &&
+      (input.year < 0 || input.year > new Date().getFullYear() + 1)
+    ) {
+      throw new GraphQLError("Invalid publication year!", {
+        extensions: { code: "BAD_USER_INPUT" },
+      });
+    }
     const newBook = {
       id: String(books.length + 1),
       ...input,
