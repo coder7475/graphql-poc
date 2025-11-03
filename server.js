@@ -49,7 +49,13 @@ const root = {
   books: () => books,
 
   // fetch a single book
-  book: ({ id }) => books.find((book) => book.id === id),
+  book: ({ id }) => {
+    const book = books.find((book) => book.id === id);
+    if (!book) {
+      throw new Error("Book not found!");
+    }
+    return book;
+  },
 
   // Resolver for searching queries
   searchBooks: ({ query }) => {
