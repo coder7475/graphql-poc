@@ -51,6 +51,14 @@ const resolvers = {
       db.games = db.games.filter((game) => game.id !== args.id);
       return db.games;
     },
+    addGame(_parent, args, _context, _info) {
+      const newGame = {
+        id: String(db.games.length + 1),
+        ...args.game,
+      };
+      db.games.push(newGame);
+      return newGame;
+    },
   },
 };
 
