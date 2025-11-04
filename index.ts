@@ -59,6 +59,18 @@ const resolvers = {
       db.games.push(newGame);
       return newGame;
     },
+    updateGame(_parent, args, _context, _info) {
+      const gameIndex = db.games.findIndex((game) => game.id === args.id);
+      if (gameIndex === -1) {
+        throw new Error("Game not found");
+      }
+      const updatedGame = {
+        ...db.games[gameIndex],
+        ...args.game,
+      };
+      db.games[gameIndex] = updatedGame;
+      return updatedGame;
+    },
   },
 };
 
